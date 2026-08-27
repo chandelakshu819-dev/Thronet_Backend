@@ -110,7 +110,7 @@ export const createSkillAssessmentController = withDevelopmentContext(async (req
 
 // POST - Submit Skill Assessment Answers
 export const submitAssessmentController = withDevelopmentContext(async (req: Request, res: Response) => {
-  const { id: assessmentId } = req.params;
+  const assessmentId = req.params.id as string;
   const { answers } = req.body;
 
   if (!assessmentId || !Array.isArray(answers) || answers.length === 0) {
@@ -216,7 +216,7 @@ export const scheduleMockInterviewController = withDevelopmentContext(async (req
 
 // POST - Complete Mock Interview
 export const completeMockInterviewController = withDevelopmentContext(async (req: Request, res: Response) => {
-  const { id: sessionId } = req.params;
+  const sessionId = req.params.id as string;
   const { answers } = req.body;
 
   if (!sessionId || !Array.isArray(answers) || answers.length === 0) {
@@ -279,7 +279,7 @@ export const submitResumeForReviewController = withDevelopmentContext(async (req
 
 // GET - Get Resume Review Result
 export const getResumeReviewController = withDevelopmentContext(async (req: Request, res: Response) => {
-  const { id: reviewId } = req.params;
+  const reviewId = req.params.id as string;
 
   if (!validId(reviewId)) {
     throw new ValidationError('Invalid review ID');
@@ -343,7 +343,8 @@ export const analyzeSalaryBenchmarkController = withDevelopmentContext(async (re
 
 // GET - Get Negotiation Tips
 export const getNegotiationTipsController = withDevelopmentContext(async (req: Request, res: Response) => {
-  const { level, industry } = req.params;
+  const level = req.params.level as string;
+  const industry = req.params.industry as string;
 
   if (!level || !industry) {
     throw new ValidationError('Level and industry parameters are required');
@@ -378,7 +379,7 @@ export const generateMarketReportController = withDevelopmentContext(async (req:
 
 // GET - Get Existing Market Report
 export const getMarketReportController = withDevelopmentContext(async (req: Request, res: Response) => {
-  const { id: reportId } = req.params;
+  const reportId = req.params.id as string;
 
   if (!validId(reportId)) {
     throw new ValidationError('Invalid report ID');

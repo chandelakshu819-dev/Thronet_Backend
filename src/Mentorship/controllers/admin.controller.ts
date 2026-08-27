@@ -134,7 +134,7 @@ class AdminController {
         return;
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { action, reason } = req.body;
 
       const review = await mentorshipReviewService.moderateReview(id, action, reason);
@@ -156,7 +156,7 @@ class AdminController {
         return;
       }
 
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { status } = req.body;
 
       const mentor = await mentorRepository.updateByMentorId(id, { status });

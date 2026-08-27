@@ -44,7 +44,7 @@ class MentorshipReviewController {
    */
   async getMentorReviews(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       const { page = 1, limit = 10 } = req.query;
 
       logger.info(`📋 Fetching reviews for mentor: ${mentorId}`);
@@ -77,7 +77,7 @@ class MentorshipReviewController {
    */
   async getReviewById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       logger.info(`🔍 Fetching review: ${id}`);
 
@@ -98,7 +98,7 @@ class MentorshipReviewController {
    */
   async updateReview(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -130,7 +130,7 @@ class MentorshipReviewController {
    */
   async deleteReview(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -156,7 +156,7 @@ class MentorshipReviewController {
    */
   async addMentorResponse(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -189,7 +189,7 @@ class MentorshipReviewController {
    */
   async markHelpful(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       logger.info(`👍 Marking review as helpful: ${id}`);
 
@@ -210,7 +210,7 @@ class MentorshipReviewController {
    */
   async reportReview(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { reason } = req.body;
 
       if (!reason) {
@@ -237,7 +237,7 @@ class MentorshipReviewController {
    */
   async getTopReviews(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       const { limit = 5 } = req.query;
 
       logger.info(`⭐ Fetching top reviews for mentor: ${mentorId}`);
@@ -259,7 +259,7 @@ class MentorshipReviewController {
    */
   async getReviewStats(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
 
       logger.info(`📊 Fetching review stats for mentor: ${mentorId}`);
 
@@ -280,7 +280,7 @@ class MentorshipReviewController {
    */
   async moderateReview(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { action, reason } = req.body;
 
       if (!['approve', 'hide', 'delete'].includes(action)) {

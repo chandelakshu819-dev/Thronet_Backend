@@ -96,7 +96,7 @@ export const createInterviewController = withPremiumExtendedContext(async (req: 
 
 // PUT - Update Interview Status
 export const updateInterviewStatusController = withPremiumExtendedContext(async (req: Request, res: Response) => {
-  const { interviewId } = req.params;
+  const interviewId = req.params.interviewId as string;
   const { status, notes } = req.body;
 
   if (!interviewId || !status || !notes) {
@@ -171,7 +171,7 @@ export const createApplicationNoteController = withPremiumExtendedContext(async 
 
 // GET - Get Application Notes
 export const getApplicationNotesController = withPremiumExtendedContext(async (req: Request, res: Response) => {
-  const { applicationId } = req.params;
+  const applicationId = req.params.applicationId as string;
 
   validateUUID(applicationId, 'Application ID');
 
@@ -225,7 +225,7 @@ export const createApplicationTemplateController = withPremiumExtendedContext(as
 
 // GET - Calculate Application Score
 export const calculateApplicationScoreController = withPremiumExtendedContext(async (req: Request, res: Response) => {
-  const { applicationId } = req.params;
+  const applicationId = req.params.applicationId as string;
 
   if (!applicationId) throw new ValidationError('applicationId is required');
 

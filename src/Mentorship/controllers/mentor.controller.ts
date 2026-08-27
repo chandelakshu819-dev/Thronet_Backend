@@ -64,7 +64,7 @@ class MentorController {
    */
   async updateProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
 
       const updates: UpdateMentorInput = {
         title: req.body.title,
@@ -108,7 +108,7 @@ class MentorController {
    */
   async getProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const authToken = req.headers.authorization?.split(' ')[1];
       const mentor = await mentorService.getMentorById(id, authToken);
 
@@ -125,7 +125,7 @@ class MentorController {
    */
   async getProfileByUserId(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { userId } = req.params;
+      const userId = req.params.userId as string;
       const authToken = req.headers.authorization?.split(' ')[1];
       const mentor = await mentorService.getMentorByUserId(userId, authToken);
 
@@ -211,7 +211,7 @@ class MentorController {
    */
   async deleteProfile(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const authToken = req.headers.authorization?.split(' ')[1];
       await mentorService.deleteMentor(id, req.user!.id, authToken);
 
@@ -229,7 +229,7 @@ class MentorController {
    */
   async getMentorStats(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const stats = await mentorService.getMentorStats(id);
 
       ResponseHandler.success(res, 'Mentor stats fetched successfully', stats);
@@ -320,7 +320,7 @@ class MentorController {
    */
   async approveMentor(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       const result = await mentorService.approveMentor(mentorId, req.user!.id);
 
       logger.info(`Mentor approved: ${mentorId} by admin: ${req.user!.id}`);

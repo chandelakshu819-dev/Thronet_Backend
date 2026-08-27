@@ -65,7 +65,7 @@ export const getFeaturesController = withPremiumContext(async (req: Request, res
 
 // GET - Applicant Insights for a Job
 export const getApplicantInsightsController = withPremiumContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
   
   if (!userId) throw new ValidationError('User ID is required');
@@ -82,7 +82,7 @@ export const getApplicantInsightsController = withPremiumContext(async (req: Req
 
 // GET - Competition Level for a Job
 export const getCompetitionController = withPremiumContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
   
   if (!userId) throw new ValidationError('User ID is required');
@@ -99,7 +99,7 @@ export const getCompetitionController = withPremiumContext(async (req: Request, 
 
 // GET - Full Competition Analysis
 export const analyzeCompetitionController = withPremiumContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
   
   if (!userId) throw new ValidationError('User ID is required');
@@ -201,7 +201,7 @@ export const refillCreditsController = withPremiumContext(async (req: Request, r
 
 // GET - Interview Questions for Job
 export const getQuestionsController = withPremiumContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
   
   if (!userId) throw new ValidationError('User ID is required');
@@ -283,7 +283,7 @@ export const getTipsController = withPremiumContext(async (req: Request, res: Re
 
 // GET - Check Feature Limit
 export const checkLimitController = withPremiumContext(async (req: Request, res: Response) => {
-  const { feature } = req.params;
+  const feature = req.params.feature as string;
   const userId = req.user?.userId;
   
   if (!userId) throw new ValidationError('User ID is required');

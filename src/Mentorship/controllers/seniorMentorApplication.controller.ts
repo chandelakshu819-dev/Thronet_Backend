@@ -141,7 +141,8 @@ class SeniorMentorApplicationController {
    */
   async getById(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
-      const application = await seniorMentorApplicationService.getByApplicationId(req.params.id);
+      const id = req.params.id as string;
+      const application = await seniorMentorApplicationService.getByApplicationId(id);
       ResponseHandler.success(res, 'Application fetched successfully', application);
     } catch (error: any) {
       logger.error('Error fetching senior mentor application:', error);
@@ -194,8 +195,9 @@ class SeniorMentorApplicationController {
    */
   async markUnderReview(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      const id = req.params.id as string;
       const application = await seniorMentorApplicationService.markUnderReview(
-        req.params.id,
+        id,
         req.user!.id
       );
       ResponseHandler.success(res, 'Application marked as under review', application);
@@ -211,8 +213,9 @@ class SeniorMentorApplicationController {
    */
   async approve(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
     try {
+      const id = req.params.id as string;
       const application = await seniorMentorApplicationService.approve(
-        req.params.id,
+        id,
         req.user!.id
       );
       ResponseHandler.success(res, 'Application approved successfully', application);
@@ -233,8 +236,9 @@ class SeniorMentorApplicationController {
         return;
       }
 
+      const id = req.params.id as string;
       const application = await seniorMentorApplicationService.reject(
-        req.params.id,
+        id,
         req.user!.id,
         req.body.reason
       );

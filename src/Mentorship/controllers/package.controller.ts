@@ -113,7 +113,7 @@ export const getPackageById = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { packageId } = req.params;
+    const packageId = req.params.packageId as string;
     const userId = req.user?.id;
 
     const packageData = await packageService.getPackageById(packageId, userId);
@@ -194,7 +194,7 @@ export const usePackageCredit = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { packageId } = req.params;
+    const packageId = req.params.packageId as string;
     const userId = req.user?.id;
     const { sessionId, sessionType, sessionDate } = req.body;
 
@@ -261,7 +261,7 @@ export const cancelPackage = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { packageId } = req.params;
+    const packageId = req.params.packageId as string;
     const userId = req.user?.id;
     const { reason } = req.body;
 

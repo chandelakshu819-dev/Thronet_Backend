@@ -26,11 +26,14 @@ const uuidSchema = () =>
 const stringRequired = (label: string, min = 1, max = 255) =>
   Joi.string().trim().min(min).max(max).required().label(label).messages(customMessages);
 
+const stringOptional = (label: string, max = 255) =>
+  Joi.string().trim().max(max).optional().label(label).messages(customMessages);
+
 // 1. Normalize array fields helper (unchanged - it's good)
 export const normalizeArrayFields = (data: any) => {
   const arrayFields = ['skills', 'searchKeywords', 'tags', 'diversityTags'];
 
-  const nestedArrayFields = {
+  const nestedArrayFields: Record<string, string[]> = {
     requirements: ['certifications', 'mandatorySkills', 'preferredSkills'],
     benefits: ['others'],
   };
@@ -61,157 +64,158 @@ export const normalizeArrayFields = (data: any) => {
 };
 
 // 2. Create Job Validation (POST /jobs)
-export const validateCreateJobInput = (input: any) => {
-  const schema = Joi.object({
-    title: stringRequired('Job Title', 5, 200).pattern(/^[a-zA-Z0-9\s\-.,&()']+$/),
+const createJobJoiSchema = Joi.object({
+  title: stringRequired('Job Title', 5, 200).pattern(/^[a-zA-Z0-9\s\-.,&()']+$/),
 
-    companyId: uuidSchema().label('Company ID'),
+  companyId: uuidSchema().label('Company ID'),
 
-    description: Joi.string()
-      .trim()
-      .max(10000)
-      .required()
-      .custom((value, helpers) => {
-        if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(value)) {
-          return helpers.error('string.unsafeContent');
-        }
-        return value;
+  description: Joi.string()
+    .trim()
+    .max(10000)
+    .required()
+    .custom((value, helpers) => {
+      if (/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi.test(value)) {
+        return helpers.error('string.unsafeContent');
+      }
+      return value;
+    })
+    .label('Job Description')
+    .messages(customMessages),
+
+  skills: Joi.array()
+    .items(
+      Joi.object({
+        name: stringRequired('Skill Name', 2, 50).pattern(/^[a-zA-Z0-9\s\-.,+#]+$/i),
+        weight: Joi.number().min(0).max(1).default(0.5).label('Skill Weight'),
+        category: Joi.string()
+          .valid('technical', 'soft', 'domain', 'tool', 'framework')
+          .default('technical')
+          .label('Skill Category'),
       })
-      .label('Job Description')
-      .messages(customMessages),
+    )
+    .min(1)
+    .required()
+    .label('Required Skills'),
 
-    skills: Joi.array()
-      .items(
-        Joi.object({
-          name: stringRequired('Skill Name', 2, 50).pattern(/^[a-zA-Z0-9\s\-.,+#]+$/i),
-          weight: Joi.number().min(0).max(1).default(0.5).label('Skill Weight'),
-          category: Joi.string()
-            .valid('technical', 'soft', 'domain', 'tool', 'framework')
-            .default('technical')
-            .label('Skill Category'),
+  location: Joi.object({
+    city: Joi.string().trim().max(100).optional().label('City'),
+    state: Joi.string().trim().max(100).optional().label('State'),
+    country: Joi.string().trim().max(100).default('India').label('Country'),
+    isRemote: Joi.boolean().default(false).label('Remote Option'),
+    coordinates: Joi.object({
+      type: Joi.string().valid('Point').default('Point'),
+      coordinates: Joi.array()
+        .items(Joi.number())
+        .length(2)
+        .custom((value, helpers) => {
+          const [lng, lat] = value;
+          if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+            return helpers.error('array.invalidCoordinates');
+          }
+          return value;
         })
-      )
-      .min(1)
-      .required()
-      .label('Required Skills'),
+        .optional()
+        .label('Coordinates'),
+    }).optional(),
+  }).label('Job Location'),
 
-    location: Joi.object({
-      city: Joi.string().trim().max(100).optional().label('City'),
-      state: Joi.string().trim().max(100).optional().label('State'),
-      country: Joi.string().trim().max(100).default('India').label('Country'),
-      isRemote: Joi.boolean().default(false).label('Remote Option'),
-      coordinates: Joi.object({
-        type: Joi.string().valid('Point').default('Point'),
-        coordinates: Joi.array()
-          .items(Joi.number())
-          .length(2)
-          .custom((value, helpers) => {
-            const [lng, lat] = value;
-            if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
-              return helpers.error('array.invalidCoordinates');
-            }
-            return value;
-          })
-          .optional()
-          .label('Coordinates'),
-      }).optional(),
-    }).label('Job Location'),
+  searchKeywords: Joi.array().items(Joi.string().trim().max(50)).optional().label('Search Keywords'),
+  tags: Joi.array().items(Joi.string().trim().max(30)).optional().label('Job Tags'),
 
-    searchKeywords: Joi.array().items(Joi.string().trim().max(50)).optional().label('Search Keywords'),
-    tags: Joi.array().items(Joi.string().trim().max(30)).optional().label('Job Tags'),
+  createdBy: uuidSchema().label('Created By'),
 
-    createdBy: uuidSchema().label('Created By'),
+  jobType: Joi.string()
+    .valid('full-time', 'part-time', 'contract', 'freelance', 'internship')
+    .required()
+    .label('Job Type'),
 
-    jobType: Joi.string()
-      .valid('full-time', 'part-time', 'contract', 'freelance', 'internship')
-      .required()
-      .label('Job Type'),
-
-    salary: Joi.object({
-      min: Joi.number().integer().min(0).max(100000000).optional().label('Minimum Salary'),
-      max: Joi.number().integer().min(0).max(100000000).optional().label('Maximum Salary'),
-      currency: Joi.string().valid('INR', 'USD', 'EUR', 'GBP').default('INR').label('Currency'),
-      isNegotiable: Joi.boolean().default(true).label('Negotiable'),
-      frequency: Joi.string().valid('hourly', 'monthly', 'yearly').default('yearly').label('Pay Frequency'),
-    }).custom((value, helpers) => {
+  salary: Joi.object({
+    min: Joi.number().integer().min(0).max(100000000).optional().label('Minimum Salary'),
+    max: Joi.number().integer().min(0).max(100000000).optional().label('Maximum Salary'),
+    currency: Joi.string().valid('INR', 'USD', 'EUR', 'GBP').default('INR').label('Currency'),
+    isNegotiable: Joi.boolean().default(true).label('Negotiable'),
+    frequency: Joi.string().valid('hourly', 'monthly', 'yearly').default('yearly').label('Pay Frequency'),
+  })
+    .custom((value, helpers) => {
       if (value.min && value.max && value.min > value.max) {
         return helpers.error('object.salaryRangeInvalid');
       }
       return value;
-    }).label('Salary'),
-
-    experience: Joi.object({
-      level: Joi.string()
-        .valid('entry', 'junior', 'mid', 'senior', 'lead', 'principal', 'executive')
-        .required()
-        .label('Experience Level'),
-      minYears: Joi.number().min(0).max(50).default(0).label('Minimum Years'),
-      maxYears: Joi.number().min(0).max(50).optional().label('Maximum Years'),
     })
-      .custom((value, helpers) => {
-        if (value.minYears && value.maxYears && value.minYears > value.maxYears) {
-          return helpers.error('object.experienceRangeInvalid');
-        }
-        return value;
-      })
+    .label('Salary'),
+
+  experience: Joi.object({
+    level: Joi.string()
+      .valid('entry', 'junior', 'mid', 'senior', 'lead', 'principal', 'executive')
       .required()
-      .label('Experience Requirements'),
-
-    requirements: Joi.object({
-      education: Joi.string().max(200).optional().label('Education'),
-      certifications: Joi.array().items(Joi.string().max(100)).optional().label('Certifications'),
-      mandatorySkills: Joi.array().items(Joi.string().max(50)).optional().label('Mandatory Skills'),
-      preferredSkills: Joi.array().items(Joi.string().max(50)).optional().label('Preferred Skills'),
-    }).optional(),
-
-    benefits: Joi.object({
-      healthInsurance: Joi.boolean().default(false),
-      paidLeave: Joi.number().min(0).max(365).optional(),
-      stockOptions: Joi.boolean().default(false),
-      remoteWork: Joi.boolean().default(false),
-      flexibleHours: Joi.boolean().default(false),
-      others: Joi.array().items(Joi.string().max(100)).optional(),
-    }).optional(),
-
-    department: Joi.string().max(100).optional().label('Department'),
-    industry: Joi.string()
-      .valid('technology', 'healthcare', 'finance', 'education', 'manufacturing', 'retail', 'consulting', 'other')
-      .optional()
-      .label('Industry'),
-
-    applicationMethod: Joi.string()
-      .valid('internal', 'external', 'email', 'linkedin')
-      .default('internal')
-      .label('Application Method'),
-
-    applicationUrl: Joi.string()
-      .uri({ scheme: ['http', 'https'] })
-      .max(500)
-      .optional()
-      .label('Application URL'),
-
-    isFeatured: Joi.boolean().default(false).label('Featured Job'),
-    isUrgent: Joi.boolean().default(false).label('Urgent Hiring'),
-
-    diversityTags: Joi.array()
-      .items(Joi.string().valid('women-friendly', 'lgbtq-friendly', 'disability-friendly', 'minority-friendly'))
-      .optional()
-      .label('Diversity Tags'),
+      .label('Experience Level'),
+    minYears: Joi.number().min(0).max(50).default(0).label('Minimum Years'),
+    maxYears: Joi.number().min(0).max(50).optional().label('Maximum Years'),
   })
-    .messages(customMessages);
+    .custom((value, helpers) => {
+      if (value.minYears && value.maxYears && value.minYears > value.maxYears) {
+        return helpers.error('object.experienceRangeInvalid');
+      }
+      return value;
+    })
+    .required()
+    .label('Experience Requirements'),
 
-  return schema.validate(input, { abortEarly: false, stripUnknown: true });
+  requirements: Joi.object({
+    education: Joi.string().max(200).optional().label('Education'),
+    certifications: Joi.array().items(Joi.string().max(100)).optional().label('Certifications'),
+    mandatorySkills: Joi.array().items(Joi.string().max(50)).optional().label('Mandatory Skills'),
+    preferredSkills: Joi.array().items(Joi.string().max(50)).optional().label('Preferred Skills'),
+  }).optional(),
+
+  benefits: Joi.object({
+    healthInsurance: Joi.boolean().default(false),
+    paidLeave: Joi.number().min(0).max(365).optional(),
+    stockOptions: Joi.boolean().default(false),
+    remoteWork: Joi.boolean().default(false),
+    flexibleHours: Joi.boolean().default(false),
+    others: Joi.array().items(Joi.string().max(100)).optional(),
+  }).optional(),
+
+  department: Joi.string().max(100).optional().label('Department'),
+  industry: Joi.string()
+    .valid('technology', 'healthcare', 'finance', 'education', 'manufacturing', 'retail', 'consulting', 'other')
+    .optional()
+    .label('Industry'),
+
+  applicationMethod: Joi.string()
+    .valid('internal', 'external', 'email', 'linkedin')
+    .default('internal')
+    .label('Application Method'),
+
+  applicationUrl: Joi.string()
+    .uri({ scheme: ['http', 'https'] })
+    .max(500)
+    .optional()
+    .label('Application URL'),
+
+  isFeatured: Joi.boolean().default(false).label('Featured Job'),
+  isUrgent: Joi.boolean().default(false).label('Urgent Hiring'),
+
+  diversityTags: Joi.array()
+    .items(Joi.string().valid('women-friendly', 'lgbtq-friendly', 'disability-friendly', 'minority-friendly'))
+    .optional()
+    .label('Diversity Tags'),
+}).messages(customMessages);
+
+export const validateCreateJobInput = (input: any) => {
+  return createJobJoiSchema.validate(input, { abortEarly: false, stripUnknown: true });
 };
 
 // 3. Update Job Validation (PATCH /jobs/:id)
 export const validateUpdateJobInput = (input: any) => {
-  // Same schema as create, but all fields optional
-  const createSchema = validateCreateJobInput.schema; // Reuse base schema
-
-  const updateSchema = createSchema.fork(Object.keys(createSchema.describe().keys), (field) => field.optional());
+  const updateSchema = createJobJoiSchema.fork(
+    Object.keys(createJobJoiSchema.describe().keys),
+    (field: Joi.Schema) => field.optional()
+  );
 
   return updateSchema
-    .min(1) // At least one field must be provided for update
+    .min(1)
     .messages({
       ...customMessages,
       'object.min': 'At least one field must be provided for update',

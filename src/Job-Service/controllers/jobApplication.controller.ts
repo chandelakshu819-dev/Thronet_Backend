@@ -44,7 +44,7 @@ const withRequestContext = (handler: (req: Request, res: Response) => Promise<vo
 
 // POST /jobs/:jobId/apply
 export const applyToJobController = withRequestContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
 
   if (!jobId || !userId || !req.body) {

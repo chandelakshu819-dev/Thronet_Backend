@@ -64,7 +64,7 @@ export const getUserPosition = async (
 ): Promise<void> => {
   try {
     const userId = req.user?.id;
-    const { mentorId } = req.params;
+    const mentorId = req.params.mentorId as string;
 
     if (!userId) {
       ResponseHandler.unauthorized(res);
@@ -123,7 +123,7 @@ export const getMentorWaitlist = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { mentorId } = req.params;
+    const mentorId = req.params.mentorId as string;
     const { status } = req.query;
 
     const waitlist = await waitlistService.getMentorWaitlist(
@@ -149,7 +149,7 @@ export const notifyNextInLine = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { mentorId } = req.params;
+    const mentorId = req.params.mentorId as string;
     const authToken = req.headers.authorization?.split(' ')[1];
 
     const notifiedEntry = await waitlistService.notifyNextInLine(mentorId, authToken);

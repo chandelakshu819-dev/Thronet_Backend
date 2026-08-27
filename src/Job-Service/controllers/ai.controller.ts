@@ -223,7 +223,7 @@ export const setFeaturedApplicantController = withAiRequestContext('featured_app
 
 // POST - Send Direct Message (Recruiter)
 export const sendDirectMessageController = withAiRequestContext('direct_message', async (req: Request, res: Response) => {
-  if (req.user?.role !== 'admin' && req.user?.role !== 'moderator') {
+  if (req.user?.role !== 'admin' && (req.user?.role as string) !== 'moderator') {
     throw new ForbiddenError('Unauthorized to send direct messages');
   }
 
@@ -280,7 +280,7 @@ export const getTopApplicantJobsController = withAiRequestContext('top_applicant
 
 // POST - Verify Company
 export const verifyCompanyController = withAiRequestContext('company_verification', async (req: Request, res: Response) => {
-  if (req.user?.role !== 'admin' && req.user?.role !== 'moderator') {
+  if (req.user?.role !== 'admin' && (req.user?.role as string) !== 'moderator') {
     throw new AuthorizationError('Unauthorized to verify companies');
   }
 
@@ -308,7 +308,7 @@ export const verifyCompanyController = withAiRequestContext('company_verificatio
 
 // POST - Verify Salary
 export const verifySalaryController = withAiRequestContext('salary_verification', async (req: Request, res: Response) => {
-  if (req.user?.role !== 'admin' && req.user?.role !== 'moderator') {
+  if (req.user?.role !== 'admin' && (req.user?.role as string) !== 'moderator') {
     throw new AuthorizationError('Unauthorized to verify salaries');
   }
 

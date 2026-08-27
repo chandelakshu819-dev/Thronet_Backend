@@ -119,7 +119,8 @@ export const addVIPCompanyController = withNotificationContext(async (req: Reque
 
 // PUT - Update VIP Company
 export const updateVIPCompanyController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.companyId)) throw new ValidationError('INVALID_COMPANY_ID');
+  const companyId = req.params.companyId as string;
+  if (!validId(companyId)) throw new ValidationError('INVALID_COMPANY_ID');
 
   if (!req.body || Object.keys(req.body).length === 0) {
     throw new BadRequestError('INVALID_REQUEST_BODY');
@@ -127,7 +128,7 @@ export const updateVIPCompanyController = withNotificationContext(async (req: Re
 
   const result = await notificationsSettingsService.updateVIPCompany(
     req.user?.userId!,
-    req.params.companyId,
+    companyId,
     sanitizeInput(req.body)
   );
 
@@ -138,11 +139,12 @@ export const updateVIPCompanyController = withNotificationContext(async (req: Re
 
 // DELETE - Remove VIP Company
 export const removeVIPCompanyController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.companyId)) throw new ValidationError('INVALID_COMPANY_ID');
+  const companyId = req.params.companyId as string;
+  if (!validId(companyId)) throw new ValidationError('INVALID_COMPANY_ID');
 
   const result = await notificationsSettingsService.removeVIPCompany(
     req.user?.userId!,
-    req.params.companyId
+    companyId
   );
 
   if (!result) throw new NotFoundError('VIP_COMPANY_NOT_FOUND');
@@ -162,11 +164,12 @@ export const getVIPCompaniesController = withNotificationContext(async (req: Req
 
 // GET - Get VIP Company Alerts
 export const getVIPCompanyAlertsController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.companyId)) throw new ValidationError('INVALID_COMPANY_ID');
+  const companyId = req.params.companyId as string;
+  if (!validId(companyId)) throw new ValidationError('INVALID_COMPANY_ID');
 
   const result = await notificationsSettingsService.getVIPCompanyAlerts(
     req.user?.userId!,
-    req.params.companyId
+    companyId
   );
 
   if (!result) throw new NotFoundError('VIP_COMPANY_ALERTS_NOT_FOUND');
@@ -192,7 +195,8 @@ export const createDeadlineReminderController = withNotificationContext(async (r
 
 // PUT - Update Deadline Reminder
 export const updateDeadlineReminderController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.reminderId)) throw new ValidationError('INVALID_REMINDER_ID');
+  const reminderId = req.params.reminderId as string;
+  if (!validId(reminderId)) throw new ValidationError('INVALID_REMINDER_ID');
 
   if (!req.body || Object.keys(req.body).length === 0) {
     throw new BadRequestError('INVALID_REQUEST_BODY');
@@ -200,7 +204,7 @@ export const updateDeadlineReminderController = withNotificationContext(async (r
 
   const result = await notificationsSettingsService.updateDeadlineReminder(
     req.user?.userId!,
-    req.params.reminderId,
+    reminderId,
     sanitizeInput(req.body)
   );
 
@@ -211,11 +215,12 @@ export const updateDeadlineReminderController = withNotificationContext(async (r
 
 // DELETE - Delete Deadline Reminder
 export const deleteDeadlineReminderController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.reminderId)) throw new ValidationError('INVALID_REMINDER_ID');
+  const reminderId = req.params.reminderId as string;
+  if (!validId(reminderId)) throw new ValidationError('INVALID_REMINDER_ID');
 
   const result = await notificationsSettingsService.deleteDeadlineReminder(
     req.user?.userId!,
-    req.params.reminderId
+    reminderId
   );
 
   if (!result) throw new BadRequestError('Failed to delete deadline reminder');
@@ -302,7 +307,8 @@ export const getAnonymousBrowsingStatusController = withNotificationContext(asyn
 
 // POST - Extend Anonymous Session
 export const extendAnonymousSessionController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.sessionId)) throw new ValidationError('INVALID_SESSION_ID');
+  const sessionId = req.params.sessionId as string;
+  if (!validId(sessionId)) throw new ValidationError('INVALID_SESSION_ID');
 
   if (!req.body || Object.keys(req.body).length === 0) {
     throw new BadRequestError('INVALID_REQUEST_BODY');
@@ -310,7 +316,7 @@ export const extendAnonymousSessionController = withNotificationContext(async (r
 
   const result = await notificationsSettingsService.extendAnonymousSession(
     req.user?.userId!,
-    req.params.sessionId,
+    sessionId,
     sanitizeInput(req.body)
   );
 
@@ -356,11 +362,12 @@ export const getAlertFrequencySettingsController = withNotificationContext(async
 
 // PUT - Update Category Frequency
 export const updateCategoryFrequencyController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!req.params.category) throw new ValidationError('Category is required');
+  const category = req.params.category as string;
+  if (!category) throw new ValidationError('Category is required');
 
   const result = await notificationsSettingsService.updateCategoryFrequency(
     req.user?.userId!,
-    req.params.category,
+    category,
     sanitizeInput(req.body).frequency
   );
 
@@ -403,11 +410,12 @@ export const getEmailPreferencesController = withNotificationContext(async (req:
 
 // PUT - Update Email Subscription
 export const updateEmailSubscriptionController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!req.params.category) throw new ValidationError('Category is required');
+  const category = req.params.category as string;
+  if (!category) throw new ValidationError('Category is required');
 
   const result = await notificationsSettingsService.updateEmailSubscription(
     req.user?.userId!,
-    req.params.category,
+    category,
     sanitizeInput(req.body).enabled
   );
 
@@ -453,9 +461,10 @@ export const getExportHistoryController = withNotificationContext(async (req: Re
 
 // GET - Get Export Status
 export const getExportStatusController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.exportId)) throw new ValidationError('INVALID_EXPORT_ID');
+  const exportId = req.params.exportId as string;
+  if (!validId(exportId)) throw new ValidationError('INVALID_EXPORT_ID');
 
-  const result = await notificationsSettingsService.getExportStatus(req.params.exportId, req.user?.userId!);
+  const result = await notificationsSettingsService.getExportStatus(exportId, req.user?.userId!);
   if (!result) throw new NotFoundError('Export not found');
 
   ResponseUtil.success(res, result, 'Export status fetched');
@@ -463,9 +472,10 @@ export const getExportStatusController = withNotificationContext(async (req: Req
 
 // GET - Download Export
 export const downloadExportController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.exportId)) throw new ValidationError('INVALID_EXPORT_ID');
+  const exportId = req.params.exportId as string;
+  if (!validId(exportId)) throw new ValidationError('INVALID_EXPORT_ID');
 
-  const result = await notificationsSettingsService.downloadExport(req.params.exportId, req.user?.userId!);
+  const result = await notificationsSettingsService.downloadExport(exportId, req.user?.userId!);
   if (!result) throw new NotFoundError('Export not found');
 
   ResponseUtil.success(res, result, 'Export downloaded');
@@ -473,9 +483,10 @@ export const downloadExportController = withNotificationContext(async (req: Requ
 
 // POST - Cancel Export
 export const cancelExportController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.exportId)) throw new ValidationError('INVALID_EXPORT_ID');
+  const exportId = req.params.exportId as string;
+  if (!validId(exportId)) throw new ValidationError('INVALID_EXPORT_ID');
 
-  const result = await notificationsSettingsService.cancelExport(req.params.exportId, req.user?.userId!);
+  const result = await notificationsSettingsService.cancelExport(exportId, req.user?.userId!);
   if (!result) throw new NotFoundError('Export not found');
 
   ResponseUtil.success(res, result, 'Export cancelled');
@@ -608,9 +619,10 @@ export const getTrustedDevicesController = withNotificationContext(async (req: R
 
 // DELETE - Revoke Trusted Device
 export const revokeTrustedDeviceController = withNotificationContext(async (req: Request, res: Response) => {
-  if (!validId(req.params.deviceId)) throw new ValidationError('INVALID_DEVICE_ID');
+  const deviceId = req.params.deviceId as string;
+  if (!validId(deviceId)) throw new ValidationError('INVALID_DEVICE_ID');
 
-  const result = await notificationsSettingsService.revokeTrustedDevice(req.user?.userId!, req.params.deviceId);
+  const result = await notificationsSettingsService.revokeTrustedDevice(req.user?.userId!, deviceId);
   if (!result) throw new NotFoundError('Trusted device not found');
 
   ResponseUtil.success(res, result, 'Trusted device revoked');

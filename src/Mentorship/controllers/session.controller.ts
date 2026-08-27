@@ -36,7 +36,7 @@ class SessionController {
    */
   async getMentorAssignedSessions(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       if (!mentorId) {
         ResponseHandler.badRequest(res, 'mentorId is required');
         return;
@@ -80,7 +80,7 @@ class SessionController {
    */
   async getSessionProgress(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -101,7 +101,7 @@ class SessionController {
    */
   async getSessionById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       const authToken = getAuthToken(req) || undefined;
 
@@ -257,7 +257,7 @@ class SessionController {
    */
   async updateSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -281,7 +281,7 @@ class SessionController {
    */
   async confirmSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -305,7 +305,7 @@ class SessionController {
    */
   async startSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -327,7 +327,7 @@ class SessionController {
    */
   async completeSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -356,7 +356,7 @@ class SessionController {
    */
   async cancelSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -397,7 +397,7 @@ class SessionController {
    */
   async rescheduleSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -548,7 +548,7 @@ class SessionController {
    */
   async addReview(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);

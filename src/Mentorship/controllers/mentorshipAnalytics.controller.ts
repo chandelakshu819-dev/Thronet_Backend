@@ -47,7 +47,7 @@ class AnalyticsController {
    */
   async getMentorStats(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       const { startDate, endDate } = req.query;
 
       if (!(await this.canAccessMentorAnalytics(req, mentorId))) {
@@ -77,7 +77,7 @@ class AnalyticsController {
    */
   async getMentorEarnings(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       const { startDate, endDate } = req.query;
 
       if (!(await this.canAccessMentorAnalytics(req, mentorId))) {
@@ -111,7 +111,7 @@ class AnalyticsController {
    */
   async getMentorSessions(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
       const { startDate, endDate } = req.query;
 
       if (!(await this.canAccessMentorAnalytics(req, mentorId))) {
@@ -144,7 +144,7 @@ class AnalyticsController {
    */
   async getMentorReviews(req: Request, res: Response): Promise<void> {
     try {
-      const { mentorId } = req.params;
+      const mentorId = req.params.mentorId as string;
 
       if (!(await this.canAccessMentorAnalytics(req, mentorId))) {
         ResponseHandler.forbidden(res, 'Access denied');

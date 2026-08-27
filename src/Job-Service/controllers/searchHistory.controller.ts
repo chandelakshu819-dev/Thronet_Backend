@@ -101,7 +101,7 @@ export const getSearchHistoryByIdController = withSearchHistoryContext(async (re
   const userId = req.user?.userId;
   if (!userId) throw new AuthorizationError('Authentication required');
 
-  const { searchId } = req.params;
+  const searchId = req.params.searchId as string;
 
   const searchHistory = await Search.findOne({
     searchId,
@@ -214,7 +214,7 @@ export const hardDeleteSearchHistoryController = withSearchHistoryContext(async 
   // Optional: add admin check
   // if (!req.user?.isAdmin) throw new ForbiddenError('Admin access required');
 
-  const { searchId } = req.params;
+  const searchId = req.params.searchId as string;
 
   const deleted = await Search.findOneAndDelete({ searchId, userId });
 

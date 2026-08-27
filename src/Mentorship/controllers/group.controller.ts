@@ -38,7 +38,7 @@ class GroupController {
    */
   async getGroupSessionById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const authToken = getAuthToken(req) || undefined;
       const session = await groupService.getGroupSessionById(id, authToken);
 
@@ -111,7 +111,7 @@ class GroupController {
    */
   async joinGroupSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -135,7 +135,7 @@ class GroupController {
    */
   async leaveGroupSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -157,7 +157,7 @@ class GroupController {
    */
   async startGroupSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -179,7 +179,7 @@ class GroupController {
    */
   async completeGroupSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -208,7 +208,7 @@ class GroupController {
    */
   async cancelGroupSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -236,7 +236,7 @@ class GroupController {
    */
   async addFeedback(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);
@@ -291,7 +291,7 @@ class GroupController {
    */
   async updateGroupSession(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id;
       if (!userId) {
         ResponseHandler.unauthorized(res);

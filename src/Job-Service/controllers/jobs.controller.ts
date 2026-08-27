@@ -31,7 +31,13 @@ import {
   getClosedJobs, getOpenJobs, applyToJob, getJobApplications, updateApplicationStatus,
   updateJobStatus,
   getUserApplications,
-  createJobService
+  createJobService,
+  getJobById,
+  updateJob,
+  listJobs,
+  getFeaturedJobs,
+  getJobsByCompany,
+  searchJobs,
 } from '@/Job-Service/services/job.service';
 import CacheUtil from '@/shared/cache.util';
 
@@ -90,7 +96,7 @@ export const createJobController = withRequestContext(async (req: Request, res: 
 
 // GET /jobs/:jobId
 export const getJobByIdController = withRequestContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
 
   if (!jobId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)) {
     throw new ValidationError('Invalid job ID format');
@@ -111,7 +117,7 @@ export const getJobByIdController = withRequestContext(async (req: Request, res:
 
 // PUT /jobs/:jobId
 export const updateJobController = withRequestContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
 
   if (!jobId || !validId(jobId)) {
     throw new ValidationError("INVALID_INPUT");
@@ -150,7 +156,7 @@ export const updateJobController = withRequestContext(async (req: Request, res: 
 
 // DELETE /jobs/:jobId - Soft delete
 export const deleteJobController = withRequestContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
 
   if (!jobId || !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(jobId)) {
     throw new ValidationError("INVALID_INPUT");
@@ -363,7 +369,7 @@ export const getClosedJobsController = withRequestContext(async (req: Request, r
 // APPLY TO JOB
 // =====================================================
 export const applyToJobController = withRequestContext(async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const { employeeId, resume, coverLetter } = req.body;
 
   const data: ApplyJobDTO = {
@@ -388,7 +394,7 @@ export const applyToJobController = withRequestContext(async (req: Request, res:
 // GET JOB APPLICATIONS
 // =====================================================
 export const getJobApplicationsController = withRequestContext(async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+  const id = req.params.id as string;
 
   logger.info(`[${req.user?.userId}] Fetching job applications:`, { jobId: id });
 
@@ -405,7 +411,8 @@ export const getJobApplicationsController = withRequestContext(async (req: Reque
 // UPDATE APPLICATION STATUS
 // =====================================================
 export const updateApplicationStatusController = withRequestContext(async (req: Request, res: Response): Promise<any> => {
-  const { id, applicationId } = req.params;
+  const id = req.params.id as string;
+  const applicationId = req.params.applicationId as string;
   const { status } = req.body;
 
   logger.info(`[${req.user?.userId}] Updating application status:`, {
@@ -431,7 +438,7 @@ export const updateApplicationStatusController = withRequestContext(async (req: 
 // GET USER APPLICATIONS
 // =====================================================
 export const getUserApplicationsController = withRequestContext(async (req: Request, res: Response): Promise<any> => {
-  const { userId } = req.params;
+  const userId = req.params.userId as string;
 
   logger.info(`[${req.user?.userId}] Fetching user applications:`, { userId });
 
@@ -444,7 +451,7 @@ export const getUserApplicationsController = withRequestContext(async (req: Requ
 // UPDATE JOB STATUS (OPEN/CLOSE)
 // =====================================================
 export const updateJobStatusController = withRequestContext(async (req: Request, res: Response): Promise<any> => {
-  const { id } = req.params;
+  const id = req.params.id as string;
   const { status } = req.body;
 
   logger.info(`[${req.user?.userId}] Updating job status:`, { jobId: id, status });

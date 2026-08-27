@@ -41,7 +41,7 @@ class QueryController {
    */
   async getQueryById(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user?.id || undefined;
       const authToken = getAuthToken(req) || undefined;
 
@@ -127,7 +127,7 @@ class QueryController {
    */
   async answerQuery(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       
       if (!userId) {
@@ -170,7 +170,7 @@ class QueryController {
    */
   async submitFollowUp(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       
       if (!userId) {
@@ -212,7 +212,7 @@ class QueryController {
    */
   async answerFollowUp(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       
       if (!userId) {
@@ -254,7 +254,7 @@ class QueryController {
    */
   async addFeedback(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId =req.user?.id
       
       if (!userId) {

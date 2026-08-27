@@ -26,7 +26,7 @@ import { NotFoundError, ValidationError } from '@/shared/errors/app.error';
 import constants from '@/shared/constants.util';
 import pagination from '@/shared/utils/company/pagination';
 import { IJob, StatsService } from '../models/Job.model';
-import { ApplicationStatus, JobFilterQuery, JobListResponse, JobResponseDTO, JobStatus } from '@/company/interfaces';
+import { ApplicationStatus, ApplyJobDTO, JobFilterQuery, JobListResponse, JobResponseDTO, JobStatus } from '@/company/interfaces';
 
 
 /**
@@ -443,7 +443,7 @@ export const getJobsByCompany = async (companyId: string, filters?: JobFilterQue
     // Fetch jobs with DB-level pagination
     const skip = (safePage - 1) * safePageSize;
     const [jobs, total] = await Promise.all([
-      Job.findJobsByCompany(companyId, { ...filters, skip, limit: safePageSize }),
+      Job.findJobsByCompany(companyId, { ...filters, skip, limit: safePageSize } as any),
       Job.countDocuments({ company: companyId, isActive: true }),
     ]);
 
@@ -475,7 +475,8 @@ export const getJobsByCompany = async (companyId: string, filters?: JobFilterQue
 // =====================================================
 export const searchJobs = async (filters: JobFilterQuery ): Promise<JobListResponse> => {
   try {
-    return listJobs(filters);
+    const res = await listJobs({ filters, requestId: generateSecureId() });
+    return res as any;
   } catch (error : any) {
     logger.error('Error searching jobs:', error);
     throw error;
@@ -498,7 +499,7 @@ export const getOpenJobs = async (filters?: JobFilterQuery): Promise<JobListResp
     // DB-level pagination
     const skip = (safePage - 1) * safePageSize;
     const [jobs, total] = await Promise.all([
-      Job.getOpenJobs({ ...filters, skip, limit: safePageSize }),
+      Job.getOpenJobs({ ...filters, skip, limit: safePageSize } as any),
       Job.countDocuments({ status: JobStatus.OPEN, isActive: true }),
     ]);
 
@@ -514,7 +515,7 @@ export const getOpenJobs = async (filters?: JobFilterQuery): Promise<JobListResp
     };
 
     // Longer cache for open jobs (more stable data)
-    CacheUtil.set(cacheKey, response, Number(constants.CACHE_TTLS.OPEN_JOBS)).catch((err) =>
+    CacheUtil.set(cacheKey, response, Number((constants.CACHE_TTLS as any).OPEN_JOBS || constants.CACHE_TTLS.JOB_LIST)).catch((err) =>
       logger.error('Cache set error:', err)
     );
 
@@ -536,14 +537,14 @@ export const getClosedJobs = async (filters?: JobFilterQuery): Promise<JobListRe
 
     const skip = (safePage - 1) * safePageSize;
     const [jobs, total] = await Promise.all([
-      Job.getClosedJobs({ ...filters, skip, limit: safePageSize }),
+      Job.getClosedJobs({ ...filters, skip, limit: safePageSize } as any),
       Job.countDocuments({ status: JobStatus.CLOSED, isActive: true }),
     ]);
 
     const meta = pagination.getMeta(total, safePage, safePageSize);
 
     return {
-      jobs: jobs.map((job) => this.formatJobResponse(job)),
+      jobs: jobs.map((job: any) => formatJobResponse(job)),
       total,
       page: meta.page,
       pageSize: meta.pageSize,
@@ -654,7 +655,7 @@ export const updateApplicationStatus = async (
   try {
     logger.info('Updating application status:', { jobId, applicationId, status });
 
-    const job = await Job.updateApplicationStatus(jobId, applicationId, status);
+    const job = await Job.updateApplicationStatus(jobId, applicationId, status as any);
     if (!job) {
       logger.warn('Job or application not found');
       return false;
@@ -765,34 +766,30 @@ export const updateJobStatus = async (id: string, status: JobStatus): Promise<bo
 // =====================================================
 // FORMAT JOB RESPONSE
 // =====================================================
-const formatJobResponse = (job: IJob): JobResponseDTO => {
-  const companyData = job.company as unknown as {
-    _id?: string;
-    name?: string;
-    logo?: string;
-  };
+const formatJobResponse = (job: any): any => {
+  const companyData = job.company as any || {};
 
   return {
-    _id: job._id.toString(),
+    _id: job._id?.toString() || job.id,
     title: job.title,
     slug: job.slug,
     description: job.description,
     company: {
-      _id: companyData._id?.toString() || job.company.toString(),
+      _id: companyData._id?.toString() || job.companyId?.toString() || String(job.company || ''),
       name: companyData.name || '',
       logo: companyData.logo,
     },
     department: job.department,
-    type: job.type,
-    experienceLevel: job.experience.level,
+    type: job.type || job.jobType,
+    experienceLevel: job.experienceLevel || job.experience?.level,
     salary: job.salary,
     location: job.location,
     skills: job.skills,
     benefits: job.benefits,
-    applicationsCount: job.stats.applicationsCount,
+    applicationsCount: job.stats?.applicationsCount || 0,
     status: job.status,
-    postedDate: job.postedDate,
-    closingDate: job.closingDate,
+    postedDate: job.postedDate || job.dates?.posted || job.createdAt,
+    closingDate: job.closingDate || job.dates?.expires,
     createdAt: job.createdAt,
     updatedAt: job.updatedAt,
   };

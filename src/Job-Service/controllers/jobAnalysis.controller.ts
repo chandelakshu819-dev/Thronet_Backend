@@ -35,7 +35,7 @@ const withRequestContext = (handler: (req: Request, res: Response) => Promise<vo
 
 // POST /jobs/:jobId/view - Record job view (idempotent)
 export const incrementViewController = withRequestContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
 
   if (!jobId) {
@@ -70,7 +70,7 @@ export const incrementViewController = withRequestContext(async (req: Request, r
 
 // POST /jobs/:jobId/save - Record job save (idempotent)
 export const incrementSaveController = withRequestContext(async (req: Request, res: Response) => {
-  const { jobId } = req.params;
+  const jobId = req.params.jobId as string;
   const userId = req.user?.userId;
 
   if (!jobId || !userId) {

@@ -62,7 +62,7 @@ export class AIController {
     async getMatchExplanation(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.user?.id;
-            const { mentorId } = req.params;
+            const mentorId = req.params.mentorId as string;
 
             if (!userId) {
                 throw new AppError('User ID not found', 401);
@@ -329,7 +329,7 @@ export class AIController {
      */
     async getSimilarMentors(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { mentorId } = req.params;
+            const mentorId = req.params.mentorId as string;
             const { limit = 5 } = req.query;
 
             if (!mentorId) {
@@ -369,7 +369,7 @@ export class AIController {
      */
     async getMentorsByDomain(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { domain } = req.params;
+            const domain = req.params.domain as string;
             const { limit = 10 } = req.query;
 
             if (!domain) {
@@ -409,7 +409,7 @@ export class AIController {
      */
     async getMentorsByCompany(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const { companyId } = req.params;
+            const companyId = req.params.companyId as string;
             const { limit = 10 } = req.query;
 
             if (!companyId) {
