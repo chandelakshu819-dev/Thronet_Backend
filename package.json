@@ -3,10 +3,13 @@
   "version": "1.0.1",
   "description": "",
   "main": "dist/server.js",
+  "workspaces": [
+    "."
+  ],
   "scripts": {
     "dev": "nodemon",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=8192 tsc && tsc-alias",
-    "start": "node dist/server.js"
+    "start": "npx tsx server.ts"
   },
   "nodemonConfig": {
     "watch": [

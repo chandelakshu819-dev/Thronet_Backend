@@ -104,7 +104,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     dumb-init curl ca-certificates wget \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd -r nodejs --gid=1001 \
-    && useradd -r -g nodejs --uid=1001 nodejs
+    && useradd -r -m -g nodejs --uid=1001 nodejs
 
 WORKDIR /app
 
@@ -119,9 +119,9 @@ COPY --from=builder --chown=nodejs:nodejs /app/src ./src
 # ✅ FIX: server.ts production image mein bhi chahiye
 COPY --from=builder --chown=nodejs:nodejs /app/server.ts ./
 
-# Runtime directories
-RUN mkdir -p logs temp uploads && \
-    chown -R nodejs:nodejs logs temp uploads
+# Runtime directories & user home directory permissions for npm
+RUN mkdir -p /home/nodejs/.npm logs temp uploads && \
+    chown -R nodejs:nodejs /home/nodejs logs temp uploads
 
 USER nodejs
 
