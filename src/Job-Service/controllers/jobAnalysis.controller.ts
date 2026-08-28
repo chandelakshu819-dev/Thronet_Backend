@@ -52,8 +52,8 @@ export const incrementViewController = withRequestContext(async (req: Request, r
 
   // Async analytics event
   JobEventHandler.handleJobView({
-    jobId,
-    userId,
+    jobId: jobId as string,
+    userId: userId as string | undefined,
     metadata: {
       ip: req.ip,
       userAgent: req.headers['user-agent'],
@@ -86,12 +86,8 @@ export const incrementSaveController = withRequestContext(async (req: Request, r
 
   // Async event
   JobEventHandler.handleJobSave({
-    jobId,
-    userId,
-    // metadata: {
-    //   ip: req.ip,
-    //   userAgent: req.headers['user-agent'],
-    // },
+    jobId: jobId as string,
+    userId: userId as string,
   }).catch(err => logger.error('Job save event failed', { err }));
 
   const responseData = { jobId };

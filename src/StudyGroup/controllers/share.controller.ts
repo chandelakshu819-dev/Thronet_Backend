@@ -8,14 +8,14 @@ import { AuthenticationError, BadRequestError, NotFoundError } from '@/shared/er
 import { LoggerUtil } from '@/shared/logger.util';
 import { AuthRequest } from '@/shared/middlewares/auth.middleware';
 
-const assertGroupId = (groupId: string | undefined): string => {
+const assertGroupId = (groupId: string | string[] | undefined): string => {
   if (!groupId) throw new BadRequestError('Group ID is required');
-  return groupId;
+  return Array.isArray(groupId) ? groupId[0] : groupId;
 };
 
-const assertInviteCode = (inviteCode: string | undefined): string => {
+const assertInviteCode = (inviteCode: string | string[] | undefined): string => {
   if (!inviteCode) throw new BadRequestError('Invite code is required');
-  return inviteCode;
+  return Array.isArray(inviteCode) ? inviteCode[0] : inviteCode;
 };
 
 const assertUserId = (userId: string | undefined): string => {

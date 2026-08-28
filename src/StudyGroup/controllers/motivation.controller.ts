@@ -209,7 +209,7 @@ export const getBadgeProgress = asyncHandler(async (req: Request, res: Response)
  * POST /api/motivation/check-badges
  */
 export const checkAndAwardBadges = asyncHandler(async (req: Request, res: Response) => {
-  const userId = (req as AuthRequest).user?.id;
+  const userId = ((req as AuthRequest).user?.id || (req as AuthRequest).user?.userId) as string;
 
   LoggerUtil.info(`Checking badges for user: ${userId}`);
 

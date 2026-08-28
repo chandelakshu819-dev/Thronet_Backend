@@ -78,7 +78,7 @@ class EventController {
         company: req.query.company as string,
         type: req.query.type as EventType | undefined,
         mode: req.query.mode as EventMode | undefined,
-        status: req.query.status as EventStatus | undefined,
+        status: req.query.status as any,
         city: req.query.city as string,
         search: req.query.search as string,
       };

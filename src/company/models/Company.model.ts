@@ -270,6 +270,8 @@ export interface ICompany extends Document {
   industry: IndustryType;
   subIndustry?: string;
   companyType: CompanyType;
+  organizationType?: OrganizationType;
+  operatingStatus?: OperatingStatus;
   companySize?: CompanySize;
   foundedYear?: number;
   email: string;
@@ -663,7 +665,7 @@ companySchema.index({ isVerified: 1, status: 1 });
 companySchema.index({ industry: 1, companySize: 1 });
 
 // ==================== PRE-VALIDATE MIDDLEWARE ====================
-companySchema.pre('validate', function (next) {
+companySchema.pre('validate', function (this: any, next) {
   if (this.headquarters) {
     const coords = (this.headquarters as any)?.coordinates?.coordinates;
     const isValid = Array.isArray(coords) &&
@@ -682,7 +684,7 @@ companySchema.pre('validate', function (next) {
 });
 
 // ==================== PRE-SAVE MIDDLEWARE ====================
-companySchema.pre('save', async function (next) {
+companySchema.pre('save', async function (this: any, next) {
   try {
     if (!this.companySlug && this.companyName) {
       this.companySlug = this.companyName
@@ -691,8 +693,8 @@ companySchema.pre('save', async function (next) {
         .replace(/^-|-$/g, '');
     }
 
-    if (this.isModified('headquarters') && (!this.headquarters.coordinates?.coordinates?.length)) {
-      const address = `${this.headquarters.address || ''}, ${this.headquarters.city}, ${this.headquarters.state}, ${this.headquarters.country}`;
+    if (this.isModified('headquarters') && (!this.headquarters?.coordinates?.coordinates?.length)) {
+      const address = `${this.headquarters?.address || ''}, ${this.headquarters?.city}, ${this.headquarters?.state}, ${this.headquarters?.country}`;
       try {
         const result = await geocoder.geocode(address);
         if (result.length > 0 && result[0].longitude && result[0].latitude) {
@@ -728,7 +730,7 @@ companySchema.pre('save', async function (next) {
 });
 
 // ==================== POST-SAVE MIDDLEWARE ====================
-companySchema.post('save', async function (doc) {
+companySchema.post('save', async function (doc: any) {
   try {
     await Promise.all([
       CacheUtil.del(`company:${doc.companyId}`),
@@ -741,15 +743,16 @@ companySchema.post('save', async function (doc) {
 });
 
 // ==================== INSTANCE METHODS ====================
-companySchema.methods.softDelete = async function (): Promise<Document & ICompany> {
+companySchema.methods.softDelete = async function (this: any): Promise<any> {
   this.audit.isDeleted = true;
   this.audit.deletedAt = new Date();
   return await this.save();
 };
 
 companySchema.methods.incrementStat = async function (
+  this: any,
   field: 'followersCount' | 'postsCount' | 'employeesCount'
-): Promise<Document & ICompany> {
+): Promise<any> {
   const CompanyModel = this.constructor as any;
   const updated = await CompanyModel.findByIdAndUpdate(
     this._id,
@@ -763,8 +766,9 @@ companySchema.methods.incrementStat = async function (
 };
 
 companySchema.methods.decrementStat = async function (
+  this: any,
   field: 'followersCount' | 'postsCount' | 'employeesCount'
-): Promise<Document & ICompany> {
+): Promise<any> {
   const CompanyModel = this.constructor as any;
   const updated = await CompanyModel.findByIdAndUpdate(
     this._id,

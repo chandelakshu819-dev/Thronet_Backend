@@ -1,26 +1,17 @@
-import { Response, NextFunction, Request } from 'express';
-import followService from '../services/Compnayfollow.service';
+import { Request, Response, NextFunction } from 'express';
+import followService from '../services/companyfollow.service';
 import { ErrorResponse, HttpStatus, SuccessResponse } from '@/shared/response.util';
 import { asyncHandler } from '@/shared/utils/helpers.util';
-
-interface AuthRequest extends Request {
-    user?: {
-        id: string;
-        userId?: string;
-        isAdmin: boolean;
-        email: string;
-        role: 'user' | 'admin';
-    };
-}
 
 class companyfollowController {
 
     // POST /api/v1/follows/company/:companyId
-    static followCompany = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-        const authUserId = req.user?.userId || req.user?.id;
+    static followCompany = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const authUserId = (user?.userId || user?.id || user?._id) as string;
         if (!authUserId) return next(new ErrorResponse('Authentication required', HttpStatus.UNAUTHORIZED, 'AUTH_ERROR'));
 
-        const { companyId } = req.params;
+        const companyId = req.params.companyId as string;
 
         await followService.followCompany(authUserId, companyId);
 
@@ -28,11 +19,12 @@ class companyfollowController {
     });
 
     // DELETE /api/v1/follows/company/:companyId
-    static unfollowCompany = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-        const authUserId = req.user?.userId || req.user?.id;
+    static unfollowCompany = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const authUserId = (user?.userId || user?.id || user?._id) as string;
         if (!authUserId) return next(new ErrorResponse('Authentication required', HttpStatus.UNAUTHORIZED, 'AUTH_ERROR'));
 
-        const { companyId } = req.params;
+        const companyId = req.params.companyId as string;
 
         await followService.unfollowCompany(authUserId, companyId);
 
@@ -41,16 +33,17 @@ class companyfollowController {
 
     // GET /api/v1/follows/company/:companyId/followers
     // Only admin or the company itself can see full follower list
-    static getCompanyFollowers = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-        const authUserId = req.user?.userId || req.user?.id;
+    static getCompanyFollowers = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const authUserId = (user?.userId || user?.id || user?._id) as string;
         if (!authUserId) return next(new ErrorResponse('Authentication required', HttpStatus.UNAUTHORIZED, 'AUTH_ERROR'));
 
-        const { companyId } = req.params;
+        const companyId = req.params.companyId as string;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 20;
 
         // Authorization: only admin or the company account itself
-        if (authUserId !== companyId && req.user?.role !== 'admin') {
+        if (authUserId !== companyId && user?.role !== 'admin') {
             return next(new ErrorResponse('Not authorized', HttpStatus.FORBIDDEN, 'AUTH_ERROR'));
         }
 
@@ -60,23 +53,24 @@ class companyfollowController {
     });
 
     // GET /api/v1/follows/company/:companyId/count  (public)
-    static getFollowerCount = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-        const { companyId } = req.params;
+    static getFollowerCount = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const companyId = req.params.companyId as string;
         const count = await followService.getFollowerCount(companyId);
         res.status(HttpStatus.OK).json(SuccessResponse({ count }, 'Follower count retrieved', HttpStatus.OK));
     });
 
     // GET /api/v1/follows/user/:userId/companies  — what companies does this user follow?
-    static getUserFollowedCompanies = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-        const authUserId = req.user?.userId || req.user?.id;
+    static getUserFollowedCompanies = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const authUserId = (user?.userId || user?.id || user?._id) as string;
         if (!authUserId) return next(new ErrorResponse('Authentication required', HttpStatus.UNAUTHORIZED, 'AUTH_ERROR'));
 
-        const { userId } = req.params;
+        const userId = req.params.userId as string;
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 20;
 
         // Users can only view their own followed companies (or admin)
-        if (userId !== authUserId && req.user?.role !== 'admin') {
+        if (userId !== authUserId && user?.role !== 'admin') {
             return next(new ErrorResponse('Not authorized', HttpStatus.FORBIDDEN, 'AUTH_ERROR'));
         }
 
@@ -86,11 +80,12 @@ class companyfollowController {
     });
 
     // GET /api/v1/follows/company/:companyId/status  — is current user following this company?
-    static getFollowStatus = asyncHandler(async (req: AuthRequest, res: Response, next: NextFunction) => {
-        const authUserId = req.user?.userId || req.user?.id;
+    static getFollowStatus = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+        const user = (req as any).user;
+        const authUserId = (user?.userId || user?.id || user?._id) as string;
         if (!authUserId) return next(new ErrorResponse('Authentication required', HttpStatus.UNAUTHORIZED, 'AUTH_ERROR'));
 
-        const { companyId } = req.params;
+        const companyId = req.params.companyId as string;
         const isFollowing = await followService.isFollowing(authUserId, companyId);
 
         res.status(HttpStatus.OK).json(SuccessResponse({ isFollowing }, 'Follow status retrieved', HttpStatus.OK));

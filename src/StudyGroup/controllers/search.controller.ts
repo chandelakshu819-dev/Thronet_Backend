@@ -59,7 +59,7 @@ export const getRecommendedGroups = asyncHandler(async (req: Request, res: Respo
 export const getGroupsByCategory = asyncHandler(async (req: Request, res: Response): Promise<void> => {
 
   const userId = (req as AuthRequest).user?.id;  // ← get userId from JWT
-  const result = await searchService.getGroupsByCategory(req.params.category, req.query, userId);
+  const result = await searchService.getGroupsByCategory(req.params.category as string, req.query, userId);
   ResponseUtil.success(res, result, `${result.category} groups retrieved successfully`);
 });
 

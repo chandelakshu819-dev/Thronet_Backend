@@ -21,7 +21,7 @@ class CompanyLogoController {
                 return;
             }
 
-            const companyId = req.params.id;
+            const companyId = req.params.id as string;
             const setAsActive = req.body.setAsActive !== 'false';
 
             LoggerUtil.info('Upload company logo request', {
@@ -58,7 +58,7 @@ class CompanyLogoController {
 
             LoggerUtil.error('Company logo upload failed', {
                 error: error.message,
-                companyId: req.params.companyId,
+                companyId: req.params.companyId as string,
                 duration,
                 correlationId,
             });
@@ -85,7 +85,7 @@ class CompanyLogoController {
 
     static async getAllLogos(req: AuthRequest, res: Response): Promise<void> {
         try {
-            const companyId = req.params.id;
+            const companyId = req.params.id as string;
 
             const logos = await CompanyLogoService.getAllLogos(companyId);
 
@@ -101,8 +101,8 @@ class CompanyLogoController {
 
     static async getLogoById(req: AuthRequest, res: Response): Promise<void> {
         try {
-            const companyId = req.params.id;
-            const { logoId } = req.params;
+            const companyId = req.params.id as string;
+            const logoId = req.params.logoId as string;
 
             const logo = await CompanyLogoService.getLogoById(companyId, logoId);
 
@@ -127,8 +127,8 @@ class CompanyLogoController {
                 return;
             }
 
-            const companyId = req.params.id;
-            const { logoId } = req.params;
+            const companyId = req.params.id as string;
+            const logoId = req.params.logoId as string;
             const uploadedBy = req.user.userId;
             const setAsActive = req.body.setAsActive !== 'false';
 
@@ -155,8 +155,8 @@ class CompanyLogoController {
                 return;
             }
 
-            const companyId = req.params.id;
-            const { logoId } = req.params;
+            const companyId = req.params.id as string;
+            const logoId = req.params.logoId as string;
 
             await CompanyLogoService.deleteLogo(companyId, logoId);
 

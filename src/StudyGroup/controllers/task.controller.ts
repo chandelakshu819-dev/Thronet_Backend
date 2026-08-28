@@ -21,31 +21,31 @@ export const getAllTasks = asyncHandler(async (req: Request, res: Response) => {
 
 export const getTaskById = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
-  const task = await taskService.getTaskById(req.params.taskId, userId!);
+  const task = await taskService.getTaskById(req.params.taskId as string, userId!);
   return ResponseUtil.success(res, task, 'Task retrieved successfully');
 });
 
 export const updateTask = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
-  const task = await taskService.updateTask(req.params.taskId, userId!, req.body);
+  const task = await taskService.updateTask(req.params.taskId as string, userId!, req.body);
   return ResponseUtil.success(res, task, 'Task updated successfully');
 });
 
 export const deleteTask = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
-  await taskService.deleteTask(req.params.taskId, userId!);
+  await taskService.deleteTask(req.params.taskId as string, userId!);
   return ResponseUtil.noContent(res);
 });
 
 export const markTaskComplete = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
-  const task = await taskService.markTaskComplete(req.params.taskId, userId!);
+  const task = await taskService.markTaskComplete(req.params.taskId as string, userId!);
   return ResponseUtil.success(res, task, 'Task marked as completed');
 });
 
 export const markTaskIncomplete = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
-  const task = await taskService.markTaskIncomplete(req.params.taskId, userId!);
+  const task = await taskService.markTaskIncomplete(req.params.taskId as string, userId!);
   return ResponseUtil.success(res, task, 'Task marked as incomplete');
 });
 

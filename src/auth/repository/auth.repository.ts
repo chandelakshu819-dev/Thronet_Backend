@@ -303,7 +303,7 @@ export class SessionRepository {
         sessionType: string;
         deviceInfo?: Record<string, any>;
     }): Promise<any> {
-        return Session.createSession(data);
+        return Session.createSession(data as any);
     }
 
     /**
@@ -440,7 +440,7 @@ export class AuditLogRepository {
         severity: string;
         metadata: Map<string, any>;
     }): Promise<void> {
-        await AuditLog.logAction(data);
+        await AuditLog.logAction(data as any);
     }
 }
 

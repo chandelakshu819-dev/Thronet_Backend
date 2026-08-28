@@ -61,7 +61,7 @@ class EventService {
       if (dto.scheduledFor) {
         const scheduledDate = new Date(dto.scheduledFor);
         if (scheduledDate > new Date()) {
-          eventStatus = 'Scheduled';   // ← EventStatus enum mein ye add karna hoga
+          eventStatus = 'Scheduled' as any;
           scheduledFor = scheduledDate;
           isPublished = false;
         }

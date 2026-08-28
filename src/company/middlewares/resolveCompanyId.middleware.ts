@@ -11,7 +11,7 @@ export const resolveCompanyUUID = async (
     res: Response,
     next: NextFunction
 ) => {
-    const uuid = req.params.id || req.params.companyId;
+    const uuid = (req.params.id || req.params.companyId) as string;
 
     if (!uuid) return next();
 

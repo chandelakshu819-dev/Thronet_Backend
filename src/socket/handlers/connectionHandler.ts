@@ -109,14 +109,17 @@ export const emitConnectionDeclined = (
 
 // Company admin apni company ka room join kare
 export const emitCompanyAnalyticsUpdate = (
-    io: Server,
     companyObjectId: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
+    io?: Server
 ) => {
-    io.to(`company:${companyObjectId}`).emit('analytics:update', {
-        ...data,
-        timestamp: new Date()
-    });
+    const socketServer = io || (global as any).io;
+    if (socketServer) {
+        socketServer.to(`company:${companyObjectId}`).emit('analytics:update', {
+            ...data,
+            timestamp: new Date()
+        });
+    }
 
     logger.info('Analytics update emitted', {
         category: LogCategory.CONNECTION,

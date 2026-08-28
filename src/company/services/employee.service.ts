@@ -75,7 +75,7 @@ class EmployeeService {
       // ✅ Create with ObjectId
       const employee = await employeeRepository.create({
         ...data,
-        company: company._id,  // UUID → ObjectId
+        company: company._id as any,  // UUID → ObjectId
       }, session);
 
       // Increment company employee count
@@ -290,7 +290,7 @@ class EmployeeService {
               firstName: company.companyName || 'Company',
               lastName: 'Team',
               email: `team@${slug}-${company._id.toString().slice(-4)}.com`,
-              company: company._id,
+              company: company._id as any,
               designation: 'Admin / Author',
               department: 'Leadership',
               isActive: true,

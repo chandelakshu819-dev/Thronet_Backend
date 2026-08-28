@@ -91,8 +91,8 @@ export const applyToJobController = withRequestContext(async (req: Request, res:
 
   // Async event (Kafka removed → keeping as event emit)
   JobEventHandler.handleJobApplication({
-    jobId,
-    userId,
+    jobId: jobId as string,
+    userId: userId as string,
     metadata: { ip: req.ip, userAgent: req.headers['user-agent'] },
   }).catch(err => logger.error('Job application event failed', { err }));
 

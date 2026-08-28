@@ -151,7 +151,7 @@ class ComplianceService {
 
             const { otp, otpRecord } = await OTPVerification.createOTP({
                 userId,
-                otpType: `annual_${verificationType}_recheck`,
+                otpType: `annual_${verificationType}_recheck` as any,
                 email: verificationType === 'email' ? (user as any).email : undefined,
                 phoneNumber: verificationType === 'phone' ? (user as any).phoneNumber : undefined,
                 expiryMinutes: 15,
@@ -189,7 +189,7 @@ class ComplianceService {
     static async verifyAnnualIdentityReCheckOTP(userId: string, otp: string, verificationType: string, ipAddress: string): Promise<{ success: boolean; message: string; verifiedAt: string }> {
         const correlationId = uuidv4();
         try {
-            await OTPVerification.verifyOTPByType(userId, otp, `annual_${verificationType}_recheck`);
+            await OTPVerification.verifyOTPByType(userId, otp, `annual_${verificationType}_recheck` as any);
 
             const updateField = verificationType === 'email' ? 'emailVerifiedAt' : 'phoneVerifiedAt';
             await User.findOneAndUpdate({ userId }, { $set: { [updateField]: new Date() } });

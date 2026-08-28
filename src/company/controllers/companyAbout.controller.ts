@@ -10,7 +10,7 @@ const getObjectId = (req: Request): string => {
     return objectId;
 };
 
-const getCompanyUUID = (req: Request): string => req.params.id;
+const getCompanyUUID = (req: Request): string => req.params.id as string;
 
 class CompanyAboutController {
 

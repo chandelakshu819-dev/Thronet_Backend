@@ -286,7 +286,8 @@ app.use(((err: CustomError, req: Request, res: Response, next: NextFunction) => 
         path: req.path,
         method: req.method,
     });
-    return res.status(err.statusCode || err.status || 500).json({
+    const status = (err as any).statusCode || (err as any).status || 500;
+    return res.status(status).json({
         status: 'error',
         message: process.env['NODE_ENV'] === 'production'
             ? 'Internal server error'

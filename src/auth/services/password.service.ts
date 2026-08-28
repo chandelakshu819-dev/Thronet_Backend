@@ -112,14 +112,15 @@ class PasswordService {
                 throw new Error(feedbackMsg || 'Password is too weak. Please choose a stronger password.');
             }
 
-            // Step 3: Password history
-            if ((user as any).passwordHash) {
-                const isRecentPassword = await PasswordHistory.isPasswordRecentlyUsed((user as any).userId, newPassword);
-                if (isRecentPassword) throw new Error('Cannot reuse any of your last 5 passwords');
-            }
-            // Step 4: Fetch user
+            // Step 3: Fetch user
             const user = await User.findOne({ userId }).select('+passwordHash email firstName').lean().exec();
             if (!user) throw new Error('User not found');
+
+            // Step 4: Password history check
+            if ((user as any).passwordHash) {
+                const isRecentPassword = await PasswordHistory.isPasswordRecentlyUsed((user as any).userId || userId, newPassword);
+                if (isRecentPassword) throw new Error('Cannot reuse any of your last 5 passwords');
+            }
 
             // Step 5: Save to history
             await PasswordHistory.addPasswordToHistory(userId, (user as any).passwordHash, {

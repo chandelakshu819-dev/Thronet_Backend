@@ -73,7 +73,7 @@ export const getTestsByGroup = asyncHandler(async (req: Request, res: Response) 
 
   // Verify user is group member
   // const isMember = await GroupMember.findOne({ group: groupId, user: userId });
-  const isMember = await groupMemberRepository.findActiveOne(groupId, userId!);
+  const isMember = await groupMemberRepository.findActiveOne(groupId as string, userId!);
   if (!isMember) {
     throw new ForbiddenError('You must be a group member to view tests');
   }
@@ -103,7 +103,7 @@ export const getTestsByGroup = asyncHandler(async (req: Request, res: Response) 
     //   .lean()
     //   .exec(),
     // Test.countDocuments(filter),
-    testRepository.findWithFilters(filter, skip, limit, sortField, sortDir),
+    testRepository.findWithFilters(filter, skip, limitNum, sortField, sortDir),
     testRepository.count(filter)
   ]);
 
@@ -113,18 +113,8 @@ export const getTestsByGroup = asyncHandler(async (req: Request, res: Response) 
 
   return ResponseUtil.success(
     res,
-    {
-      page: pageNum,
-      limit: limitNum,
-      total,
-      totalPages,
-      hasNextPage: pageNum < totalPages,
-      hasPrevPage: pageNum > 1,
-      tests: tests
-    },
-    'Tests retrieved successfully',
-    200,
-
+    { tests, pagination: { total, page: pageNum, limit: limitNum, totalPages } },
+    'Tests retrieved successfully'
   );
 });
 
@@ -137,7 +127,7 @@ export const getTestById = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
   const { testId } = req.params;
 
-  if (!testId || !validId(testId)) {
+  if (!testId || !validId(testId as string)) {
     LoggerUtil.warn(`Invalid test ID format: ${testId}`);
     throw new BadRequestError('Invalid test ID format');
   }
@@ -148,7 +138,7 @@ export const getTestById = asyncHandler(async (req: Request, res: Response) => {
   //   .populate('creator', 'name email avatar')
   //   .populate('questions')
   //   .lean();
-  const test = await testRepository.findByIdWithPopulate(testId)
+  const test = await testRepository.findByIdWithPopulate(testId as string)
 
   if (!test) {
     LoggerUtil.warn(`Test not found: ${testId}`);
@@ -179,7 +169,7 @@ export const updateTest = asyncHandler(async (req: Request, res: Response) => {
   const { testId } = req.params;
   const updateData = req.body;
 
-  if (!testId || !validId(testId)) {
+  if (!testId || !validId(testId as string)) {
     throw new BadRequestError('Invalid test ID format');
   }
 
@@ -189,7 +179,7 @@ export const updateTest = asyncHandler(async (req: Request, res: Response) => {
 
   LoggerUtil.info(`Updating test ${testId} by user ${userId}`);
 
-  const test = await testRepository.findRawById(testId)
+  const test = await testRepository.findRawById(testId as string)
 
   if (!test) {
     throw new NotFoundError('Test not found');
@@ -217,13 +207,13 @@ export const deleteTest = asyncHandler(async (req: Request, res: Response) => {
   const userId = (req as AuthRequest).user?.id;
   const { testId } = req.params;
 
-  if (!testId || !validId(testId)) {
+  if (!testId || !validId(testId as string)) {
     throw new BadRequestError('Invalid test ID format');
   }
 
   LoggerUtil.info(`Deleting test ${testId}`);
 
-  const test = await testRepository.findRawById(testId);
+  const test = await testRepository.findRawById(testId as string);
 
   if (!test) {
     throw new NotFoundError('Test not found');
@@ -235,10 +225,10 @@ export const deleteTest = asyncHandler(async (req: Request, res: Response) => {
   }
 
   // Delete all questions associated with this test
-  await questionRepository.deleteManyByTestId(testId);
+  await questionRepository.deleteManyByTestId(testId as string);
 
   // Delete the test
-  await testRepository.deleteById(testId);
+  await testRepository.deleteById(testId as string);
 
   LoggerUtil.info(`Test deleted: ${testId}`);
 
@@ -255,13 +245,13 @@ export const addQuestion = asyncHandler(async (req: Request, res: Response) => {
   const { testId } = req.params;
   const questionData = req.body;
 
-  if (!testId || !validId(testId)) {
+  if (!testId || !validId(testId as string)) {
     throw new BadRequestError('Invalid test ID format');
   }
 
   LoggerUtil.info(`Adding question to test ${testId}`);
 
-  const test = await testRepository.findRawById(testId);
+  const test = await testRepository.findRawById(testId as string);
 
   if (!test) {
     throw new NotFoundError('Test not found');
@@ -302,17 +292,17 @@ export const updateQuestion = asyncHandler(async (req: Request, res: Response) =
   const { testId, questionId } = req.params;
   const updateData = req.body;
 
-  if (!testId || !validId(testId)) {
+  if (!testId || !validId(testId as string)) {
     throw new BadRequestError('Invalid test ID format');
   }
 
-  if (!questionId || !validId(questionId)) {
+  if (!questionId || !validId(questionId as string)) {
     throw new BadRequestError('Invalid question ID format');
   }
 
   LoggerUtil.info(`Updating question ${questionId} in test ${testId}`);
 
-  const test = await testRepository.findRawById(testId);
+  const test = await testRepository.findRawById(testId as string);
 
   if (!test) {
     throw new NotFoundError('Test not found');
@@ -323,7 +313,7 @@ export const updateQuestion = asyncHandler(async (req: Request, res: Response) =
     throw new ForbiddenError('Only test creator can update questions');
   }
 
-  const question = await questionRepository.findByIdAndTestId(questionId, testId)
+  const question = await questionRepository.findByIdAndTestId(questionId as string, testId as string);
 
   if (!question) {
     throw new NotFoundError('Question not found');

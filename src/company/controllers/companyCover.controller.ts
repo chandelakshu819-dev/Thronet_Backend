@@ -12,7 +12,7 @@ class CompanyCoverController {
             const uploadedBy = req.user?.id || req.user?.userId || 'system';
             if (!req.file) { ResponseUtil.badRequest(res, 'No file uploaded'); return; }
 
-            const companyId = req.params.id;
+            const companyId = req.params.id as string;
             const setAsActive = req.body.setAsActive !== 'false';
 
             const result = await CompanyCoverService.uploadCover(companyId, uploadedBy, req.file, setAsActive);
@@ -29,7 +29,7 @@ class CompanyCoverController {
 
     static async getAllCovers(req: AuthRequest, res: Response): Promise<void> {
         try {
-            const companyId = req.params.id;
+            const companyId = req.params.id as string;
             const covers = await CompanyCoverService.getAllCovers(companyId);
             ResponseUtil.success(res, { covers }, 'Covers fetched successfully');
         } catch (error: any) {
@@ -40,8 +40,8 @@ class CompanyCoverController {
 
     static async getCoverById(req: AuthRequest, res: Response): Promise<void> {
         try {
-            const companyId = req.params.id;
-            const { coverId } = req.params;
+            const companyId = req.params.id as string;
+            const coverId = req.params.coverId as string;
 
             const cover = await CompanyCoverService.getCoverById(companyId, coverId);
             ResponseUtil.success(res, { cover }, 'Cover fetched successfully');
@@ -58,8 +58,8 @@ class CompanyCoverController {
             if (!req.user?.userId) { ResponseUtil.unauthorized(res, 'Authentication required'); return; }
             if (!req.file) { ResponseUtil.badRequest(res, 'No file uploaded'); return; }
 
-            const companyId = req.params.id;
-            const { coverId } = req.params;
+            const companyId = req.params.id as string;
+            const coverId = req.params.coverId as string;
             const uploadedBy = req.user.userId;
             const setAsActive = req.body.setAsActive !== 'false';
 
@@ -78,8 +78,8 @@ class CompanyCoverController {
         try {
             if (!req.user?.userId) { ResponseUtil.unauthorized(res, 'Authentication required'); return; }
 
-            const companyId = req.params.id;
-            const { coverId } = req.params;
+            const companyId = req.params.id as string;
+            const coverId = req.params.coverId as string;
 
             await CompanyCoverService.deleteCover(companyId, coverId);
             ResponseUtil.success(res, null, 'Cover deleted successfully');

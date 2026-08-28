@@ -125,7 +125,7 @@ class PostController {
         pollData,
         images,
         videos,
-        documents,
+        documents: documents as any,
       });
 
       res.status(201).json({
@@ -238,14 +238,15 @@ class PostController {
       const page = parseInt(req.query.page as string) || 1;
       const pageSize = parseInt(req.query.pageSize as string) || 20;
 
-      const result = await postService.getPostsByCompany(companyObjectId, page, pageSize);
-      const rawPosts = result.posts || result.items || (Array.isArray(result) ? result : []);
+      const result = await postService.getCompanyPosts(companyObjectId, page, pageSize);
+      const resAny = result as any;
+      const rawPosts = resAny.posts || resAny.items || (Array.isArray(result) ? result : []);
       const enriched = await this.enrichPostsWithLiked(rawPosts, userId);
 
-      if (result.posts) {
-        result.posts = enriched;
-      } else if (result.items) {
-        result.items = enriched;
+      if (resAny.posts) {
+        resAny.posts = enriched;
+      } else if (resAny.items) {
+        resAny.items = enriched;
       }
 
       ResponseUtil.success(res, Array.isArray(result) ? enriched : result, 'Company posts retrieved successfully');

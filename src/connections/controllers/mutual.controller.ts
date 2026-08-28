@@ -43,15 +43,7 @@ import { asyncHandler } from '@/shared/utils/helpers.util';
  */
 
 interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    userId?: string;
-    isAdmin: boolean;
-    email: string;
-    role: 'user' | 'admin';
-    deviceId?: string | null;
-    sessionId?: string | null;
-  };
+  user?: any;
 }
 
 class mutualController {

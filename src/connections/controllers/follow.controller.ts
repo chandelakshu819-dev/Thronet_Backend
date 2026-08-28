@@ -166,7 +166,7 @@ res.status(HttpStatus.CREATED).json(
         return next(new ErrorResponse('User not authenticated', HttpStatus.UNAUTHORIZED, ERROR_CODES.AUTH_FAILED));
       }
 
-      if (!followingId || followingId.trim() === '') {
+      if (!followingId || (followingId as string).trim() === '') {
         return next(new ErrorResponse('Invalid user ID', HttpStatus.BAD_REQUEST, ERROR_CODES.VALIDATION_FAILED));
       }
 
@@ -410,7 +410,7 @@ res.status(HttpStatus.CREATED).json(
       const { userId } = req.params;
       const validatedQuery = validateFollowData(req.query, getFollowListSchema);
 
-      if (!userId || userId.trim() === '') {
+      if (!userId || (userId as string).trim() === '') {
         return next(new ErrorResponse('User ID is required', HttpStatus.BAD_REQUEST, ERROR_CODES.VALIDATION_FAILED));
       }
 
@@ -489,7 +489,7 @@ res.status(HttpStatus.CREATED).json(
       const { userId } = req.params;
       const validatedQuery = validateFollowData(req.query, getFollowListSchema);
 
-      if (!userId || userId.trim() === '') {
+      if (!userId || (userId as string).trim() === '') {
         return next(new ErrorResponse('User ID is required', HttpStatus.BAD_REQUEST, ERROR_CODES.VALIDATION_FAILED));
       }
 
@@ -571,7 +571,7 @@ res.status(HttpStatus.CREATED).json(
     try {
       const { userId } = req.params;
 
-      if (!userId || userId.trim() === '') {
+      if (!userId || (userId as string).trim() === '') {
         return next(new ErrorResponse('User ID is required', HttpStatus.BAD_REQUEST, ERROR_CODES.VALIDATION_FAILED));
       }
 
@@ -630,7 +630,7 @@ res.status(HttpStatus.CREATED).json(
         return next(new ErrorResponse('User not authenticated', HttpStatus.UNAUTHORIZED, ERROR_CODES.AUTH_FAILED));
       }
 
-      if (!followingId || followingId.trim() === '') {
+      if (!followingId || (followingId as string).trim() === '') {
         return next(new ErrorResponse('Invalid user ID', HttpStatus.BAD_REQUEST, ERROR_CODES.VALIDATION_FAILED));
       }
 

@@ -133,7 +133,7 @@ class PhoneOTPController {
 
             const { otp, otpRecord } = await PhoneOTPVerification.createPhoneOTP({
                 userId, phoneNumber, expiryMinutes: 10,
-                metadata: { ipAddress: req.ip, userAgent: req.headers['user-agent'], resend: true },
+                metadata: { ipAddress: req.ip, userAgent: req.headers['user-agent'], resend: true } as any,
             });
 
             const smsResult = await PhoneSMSService.sendOTP(phoneNumber, otp, 10);

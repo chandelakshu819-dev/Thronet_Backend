@@ -24,7 +24,7 @@ import { MemberRole, MemberStatus } from '../interfaces/IGroupMember';
 import { NotificationType } from '../enums/NotificationType.enum';
 import mongoose from 'mongoose';
 import { AuthRequest } from '@/shared/middlewares/auth.middleware';
-import groupRepository, { GroupRepository } from '../repositories/group.repository';
+import groupRepository from '../repositories/group.repository';
 import groupMemberRepository from '../repositories/groupMember.repository';
 
 /**

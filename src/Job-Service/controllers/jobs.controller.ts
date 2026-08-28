@@ -136,7 +136,7 @@ export const updateJobController = withRequestContext(async (req: Request, res: 
 
   const updatedJob = await updateJob({
     jobId,
-    userId: req.user?.userId,
+    userId: req.user?.userId as string,
     requestId: generateSecureId(),
     updates: value,
   });

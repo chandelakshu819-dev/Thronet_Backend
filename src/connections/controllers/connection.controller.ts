@@ -69,16 +69,7 @@ import { asyncHandler } from '@/shared/utils/helpers.util';
  * Updated to match authentication middleware's actual user object structure
  */
 interface AuthRequest extends Request {
-    user?: {
-        id: string;
-        userId?: string;
-        isAdmin: boolean;
-        region?: string;
-        email: string;
-        role: 'user' | 'admin';
-        deviceId?: string | null;
-        sessionId?: string | null;
-    };
+    user?: any;
     correlationId?: string;
 }
 

@@ -82,14 +82,15 @@ class CompanyActivityController {
             targetId
           });
           if (!existing) {
-            const reviewerName = r.isAnonymous ? 'Anonymous Employee' : (r.reviewer || 'Verified Employee');
+            const isAnon = Boolean((r as any).isAnonymous);
+            const reviewerName = isAnon ? 'Anonymous Employee' : ((r as any).reviewer || 'Verified Employee');
             const ratingVal = r.rating?.overall || 5;
             await CompanyActivity.create({
               activityId: `act-${r._id}`,
               companyId: primaryCompanyId,
               type: 'review',
               user: reviewerName,
-              avatar: r.isAnonymous ? '👤' : getInitials(reviewerName),
+              avatar: isAnon ? '👤' : getInitials(reviewerName),
               color: 'bg-yellow-500',
               action: `left a ${ratingVal}★ review on your company`,
               read: false,
@@ -98,8 +99,8 @@ class CompanyActivityController {
                 rating: ratingVal,
                 title: r.title || 'Company Review',
                 content: r.content || '',
-                isAnonymous: Boolean(r.isAnonymous),
-                isVerified: Boolean(r.isVerified),
+                isAnonymous: isAnon,
+                isVerified: Boolean((r as any).isVerified),
                 sentiment: ratingVal >= 4 ? 'positive' : ratingVal === 3 ? 'neutral' : 'negative',
                 existingResponse: r.responses?.[0]?.content || undefined,
               },

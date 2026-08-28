@@ -116,7 +116,7 @@ export const getGroupLeaderboard = asyncHandler(async (req: Request, res: Respon
   const limit = Math.min(Number(req.query.limit || 50), 50);
 
   // Group members fetch karo repository se — was: empty array TODO
-  const members = await groupMemberRepository.findByGroupId(groupId);
+  const members = await groupMemberRepository.findByGroupId(groupId as string);
   const userIds = members.map((m: any) => m.userId);
 
   const leaderboard = await getGroupStreakLeaderboard(userIds, limit);

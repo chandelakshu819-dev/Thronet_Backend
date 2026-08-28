@@ -57,7 +57,7 @@ export const getMyRank = asyncHandler(async (req: Request, res: Response) => {
 export const getUserRank = asyncHandler(async (req: Request, res: Response) => {
   const { userId } = req.params;   // UUID string — no ObjectId check
 
-  const ranking = await rankingRepository.findByUserIdWithPopulate(userId);
+  const ranking = await rankingRepository.findByUserIdWithPopulate(userId as string);
   if (!ranking) return ResponseUtil.notFound(res, 'Ranking not found for this user');
 
   const user = ranking.userId as any;
@@ -168,10 +168,10 @@ export const getGroupLeaderboard = asyncHandler(async (req: Request, res: Respon
   const limit = Math.min(parseInt(req.query.limit as string) || 100, 100);
 
   // Group exists check
-  const group = await groupRepository.findByGroupId(groupId);
+  const group = await groupRepository.findByGroupId(groupId as string);
   if (!group) return ResponseUtil.notFound(res, 'Group not found');
 
-  const data = await rankingService.getGroupLeaderboard(groupId, page, limit);
+  const data = await rankingService.getGroupLeaderboard(groupId as string, page, limit);
 
   // Current user rank in group
   const myRank = data.leaderboard.findIndex((u: any) => u.userId === userId) + 1;

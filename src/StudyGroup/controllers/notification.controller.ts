@@ -45,7 +45,7 @@ class NotificationController {
 
     if (!notificationId) throw new BadRequestError('Notification ID is required');
 
-    const notification = await notificationService.markAsRead(notificationId, userId!);
+    const notification = await notificationService.markAsRead(notificationId as string, userId!);
     return ResponseUtil.success(res, notification, 'Notification marked as read successfully');
   });
 
@@ -61,7 +61,7 @@ class NotificationController {
 
     if (!notificationId) throw new BadRequestError('Notification ID is required');
 
-    const result = await notificationService.deleteNotification(notificationId, userId!);
+    const result = await notificationService.deleteNotification(notificationId as string, userId!);
     return ResponseUtil.success(res, result, 'Notification deleted successfully');
   });
 
