@@ -69,14 +69,20 @@ app.disable('x-powered-by');
 // ==================== CORS ====================
 app.use(cors({
     origin: (origin, callback) => {
-        const allowedOrigins = process.env['CORS_ORIGIN']
-            ? process.env['CORS_ORIGIN'].split(',').map(o => o.trim())
-            : ['http://localhost:3000', 'http://localhost:3001'];
+        const allowedOrigins = (process.env['CORS_ORIGIN'] || process.env['ALLOWED_ORIGINS'] || '')
+            .split(',')
+            .map(o => o.trim())
+            .filter(Boolean);
 
         // Server-to-server calls (no origin) allow karo
         if (!origin) return callback(null, true);
 
-        if (allowedOrigins.includes(origin)) {
+        if (
+            allowedOrigins.includes('*') ||
+            allowedOrigins.includes(origin) ||
+            origin.endsWith('.vercel.app') ||
+            origin.startsWith('http://localhost')
+        ) {
             return callback(null, true);
         }
 

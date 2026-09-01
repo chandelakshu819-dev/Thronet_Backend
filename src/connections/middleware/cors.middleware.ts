@@ -47,7 +47,7 @@ const allowedOrigins = new Set(
 export const corsMiddleware = cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     const startTime = Date.now();
-    if (!origin || allowedOrigins.has('*') || allowedOrigins.has(origin)) {
+    if (!origin || allowedOrigins.has('*') || allowedOrigins.has(origin) || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost')) {
       logger.debug('CORS origin allowed', {
         category: LogCategory.SECURITY,
         data: { origin: origin || 'none', duration: Date.now() - startTime }
